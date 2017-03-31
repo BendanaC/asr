@@ -14,22 +14,23 @@ angular.module('asrApp')
         component: 'list',
         params: {
             index: '1',
-            size: '10',
+            size: '10'
         },
         resolve: {
             accountsResource: function($stateParams, RestService) {
                 if ($stateParams.searchFilter) {
-                    return RestService.searchAdmin('users', {
+                    return RestService.search('users', {
                         page: $stateParams.index,
                         size: $stateParams.size,
                         filter: $stateParams.searchFilter,
                     },
                     'findByNameOrEmailOrLogin');
                 } else {
-                    return RestService.fetchAdmin('users', {
+                    return RestService.fetch('users', {
                         page: $stateParams.index,
                         size: $stateParams.size,
-                    });
+                    },
+                    '/admin');
                 }
             }
         }

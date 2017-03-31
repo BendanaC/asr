@@ -1,0 +1,8 @@
+.identified-list-item {
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+        @extend .bg-primary;
+    }
+}

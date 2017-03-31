@@ -7,8 +7,15 @@ angular.module('asrApp')
 
       // Public API here
       return {
-         fetch: function (rel, params) {
-            return hrRoot(restApiRoot).follow().$promise
+         fetch: function (rel, params, adminRoot) {
+            var root;
+            if (adminRoot) {
+               root = restApiRoot + adminRoot;   
+            } else {
+               root = restApiRoot;
+            }
+            //var root = adminRoot ? (restApiRoot + adminRoot) : restApiRoot;
+            return hrRoot(root).follow().$promise
                .then(function (rootResource) {
                   if (rootResource.$has(rel)) {
                      return rootResource
@@ -77,6 +84,25 @@ angular.module('asrApp')
                      throw Error('Requested relation %s has no search %s');
                   }
                });
+         },
+         create: function (rel, data) {
+            return hrRoot('/api/admin').follow().$promise
+               .then(function (rootResource) {
+                if (rootResource.$has(rel)) {
+                   return rootResource
+                      .$followOne(rel, { protocol: 
+                                          { method: 'POST', data: data } 
+                                       }).$promise;
+                } else {
+                   throw Error('Requested relation not found in the root resource.');
+                }
+            });
+         },
+         update: function (resource, data) {
+            return resource.$followOne('self',
+                  { protocol: 
+                        { method: 'PUT', data: data }
+                  }).$promise
          }
       };
    });

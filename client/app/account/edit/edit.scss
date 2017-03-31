@@ -1,0 +1,50 @@
+$my-ease-in: cubic-bezier(.5,0,1,.5);
+$my-ease-out: cubic-bezier(0,.5,.5,1);
+
+.clickable-text {
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.animate-show-hide {
+    &.ng-hide-add,
+    &.ng-hide-remove.ng-hide-remove-active {
+        max-height: 750px;
+        opacity: 1;
+    }
+
+    &.ng-hide-remove,
+    &.ng-hide-add.ng-hide-add-active {
+        max-height: 0;
+        opacity: 0;
+    }
+
+    &.ng-hide-add.ng-hide-add {
+        -webkit-transition: all $my-ease-out .5s;
+        -moz-transition: all $my-ease-out .5s;
+        -o-transition: all $my-ease-out .5s;
+        transition: all $my-ease-out .5s;
+    }
+
+    &.ng-hide-remove.ng-hide-remove {
+        -webkit-transition: all $my-ease-in .5s;
+        -moz-transition: all $my-ease-in .5s;
+        -o-transition: all $my-ease-in .5s;
+        transition: all $my-ease-in .5s;
+    }
+}
+
+form .form-control-feedback {
+    right: 15px;
+}
+
+form select ~ .form-control-feedback {
+    right: 25px;
+}
+
+.fieldset-header {
+    font-size: 2.5rem;
+}

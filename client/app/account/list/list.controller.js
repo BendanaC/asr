@@ -22,7 +22,7 @@ angular.module('asrApp')
     self.working = false;
 
     if (this.accountsResource.$has('users')) {
-        self.accounts = this.accountsResource.$subs('users');
+        self.accounts = self.accountsResource.$subs('users');
     } else {
         $log.debug('Account resource not found in server response.');
         Notification.error({
@@ -33,7 +33,7 @@ angular.module('asrApp')
 
     self.index = $stateParams.index;
     self.size = $stateParams.size;
-    self.totalItems = this.accountsResource.page.totalItems;
+    self.totalItems = self.accountsResource.page.totalItems;
     self.filter = $stateParams.searchFilter;
 
     self.pageChanged = function() {
@@ -48,26 +48,27 @@ angular.module('asrApp')
         goToPage($stateParams.size, 1);
     };
 
-    self.unlink = function(account) {
+    self.delete = function(account) {
         self.working= true;
         account.$delete()
+        .$promise
         .then(function () {
-            account.$hasCustomer = false;
-            $log.debug('Successfully unlinked the account.');
+            $log.debug('Successfully deleted the account.');
             Notification.success({
                 title: 'Success',
-                message: 'The account was correctly unlinked.'
+                message: 'The account was correctly deleted.'
             })
         })
         .catch(function (error) {
             $log.debug(error);
             Notification.error({
                 title: 'Application error',
-                message: 'Error found while talking to unlink the account. Details logged to the console.'
+                message: 'Error found while talking to delete the account. Details logged to the console.'
             });
         })
         .finally(function() {
             self.working = false;
+            $state.reload();
         });
     };
 

@@ -39,12 +39,6 @@ angular.module('asrApp')
         server: {},
     };
 
-    // Enum for possible gender values
-    self.genderEnum = {
-        MALE: 'Male',
-        FEMALE: 'Female',
-    };
-
     // Enum for possible status values
     self.rolesEnum = {
         ADMIN: 'Admin',
@@ -54,28 +48,21 @@ angular.module('asrApp')
     self.fieldSets = {
         accountInfo: {
             visible: true,
-        },
-        personalInfo: {
-            visible: true,
-        },
-        extraInfo: {
-            visible: false,
-        },
+        }
     };
 
     // Returns all users that match the filter
     self.getUsers = function getUsers(filter) {
-        return RestService.searchAdmin({
-            rel: 'customers',
-            searchRel: 'findByNameOrid',
-            urlParams: { filter: filter },
-        }).then(function (customersResource) {
-            if (customersResource.$has('customers')) {
-                return customersResource.$get('customers');
-            } else {
-                return [];
-            }
-        });
+        /*return RestService.search(
+            'users',
+            { filter: filter },
+            'findByNameOrEmailOrLogin'
+        );*/
+        return RestService.fetch(
+            'users',
+            { index: '1', size: '10' },
+            '/admin'
+        );
     };
 
     // Formats a user for display
@@ -105,8 +92,8 @@ angular.module('asrApp')
                     delta[key] = self.account[key];
                 }
             });
-            // accountResource.$followOne('search', {protocol: {method: 'PUT', data: delta} });
-            self.accountResource.$patch('self', null, delta)
+            
+            RestService.update(self.accountResource, delta)
             .then(function () {
                 $log.debug('Account updated.');
                 Notification.success({
@@ -120,33 +107,14 @@ angular.module('asrApp')
                 self.saving = false;
             });
         } else {
-            RestService.apiRoot()
-            .then(function (rootResource) {
-                if (rootResource.$has('accounts')) {
-                    rootResource.$post('accounts', null, self.account)
-                    // rootResource.$followOne('search', {protocol: {method: 'POST', data: self.account} });
-                    // rootResource.$followOne('post', { data: self.account });
-                    .then(function (newAccount) {
-                        if (self.customer) {
-                            return newAccount.$put('customer', assocOptions, self.customer.$href('self'));
-                        }
-                    })
-                    .then(function () {
-                        $log.debug('Account created.');
-                        Notification.success({
-                            title: 'Success',
-                            message: 'The account was created.',
-                        });
-                        $state.go('account.list');
-                    })
-                    .catch(restServiceErrorHandler)
-                    .finally(function () {
-                        self.saving = false;
-                    });
-                } else {
-                    var error = new Error('Server does not contain the required resources.');
-                    throw error;
-                }
+            RestService.create('addUser', self.account)
+            .then(function () {
+                $log.debug('Account created.');
+                Notification.success({
+                    title: 'Success',
+                    message: 'The account was created.',
+                });
+                $state.go('account.list');
             })
             .catch(restServiceErrorHandler)
             .finally(function () {
